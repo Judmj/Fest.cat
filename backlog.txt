@@ -1,3 +1,9 @@
-- 
-- afegir calendari
-- afegir filtres
+- millorar filtres:
+        1. jerarquia de dates
+        2. desglossar ubicacions (només provincies??)
+- afegir calendari visual
+- afegir logos dels festivals
+
+- millores visuals:
+      1. revisar textos i frases en general 
+      2. fes més prims els requadres dels filtres
