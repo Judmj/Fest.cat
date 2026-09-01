@@ -138,7 +138,7 @@
   .filters{
     width:100%;
     display:grid;
-    grid-template-columns:repeat(3, minmax(0, 1fr)) auto;
+    grid-template-columns:1fr 1fr 1fr;
     gap:8px;
     align-items:end;
   }
@@ -168,7 +168,9 @@
     outline:none;
     transition:border-color .15s, box-shadow .15s;
   }
-  .filter-control:hover{border-color:rgba(35,255,235,.28);}
+  .filter-control:hover{
+    border-color:rgba(35,255,235,.28);
+  }
   .filter-control:focus{
     border-color:var(--cyan);
     box-shadow:0 0 0 3px rgba(35,255,235,.08);
@@ -191,25 +193,6 @@
     color:var(--muted);
     pointer-events:none;
   }
-  .clear-filters{
-    height:42px;
-    padding:0 13px;
-    border:1px solid var(--line);
-    border-radius:11px;
-    background:transparent;
-    color:var(--muted);
-    font-family:var(--font-label);
-    font-weight:800;
-    font-size:.72rem;
-    cursor:pointer;
-    white-space:nowrap;
-    transition:border-color .15s, color .15s, background .15s;
-  }
-  .clear-filters:hover{
-    color:var(--text);
-    border-color:var(--muted);
-    background:var(--surface);
-  }
   .filter-result{
     margin:0 0 4px;
     color:var(--muted);
@@ -220,11 +203,8 @@
     .filters{
       grid-template-columns:1fr 1fr;
     }
-    .filter-field:last-of-type{
+    .filter-field:last-child{
       grid-column:1 / -1;
-    }
-    .clear-filters{
-      width:100%;
     }
   }
   @media (max-width:480px){
@@ -234,7 +214,7 @@
     .filters{
       grid-template-columns:1fr;
     }
-    .filter-field:last-of-type{
+    .filter-field:last-child{
       grid-column:auto;
     }
   }
@@ -393,7 +373,6 @@
     <div class="hero-stats" id="hero-stats"></div>
   </section>
 
-
   <section class="filters-wrap" aria-label="Filtres de cerca">
     <div class="filters">
       <div class="filter-field">
@@ -423,17 +402,14 @@
           aria-label="Cerca per artista"
         >
         <datalist id="artist-options"></datalist>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <circle cx="11" cy="11" r="7"></circle>
           <path d="m20 20-4-4"></path>
         </svg>
       </div>
-
-      <button class="clear-filters" id="clear-filters" type="button" title="Neteja els filtres">
-        Neteja
-      </button>
     </div>
   </section>
+
   <div class="filter-result" id="filter-result" aria-live="polite"></div>
 
   <main id="upcoming">
@@ -529,9 +505,6 @@ function formatLongDate(d){
 const pinIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>`;
 const ticketIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 0 0 4v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a2 2 0 0 1 0-4V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/><line x1="12" y1="5" x2="12" y2="19" stroke-dasharray="2.5 2.5"/></svg>`;
 
-let ALL_EVENTS = [];
-let FILTERS_READY = false;
-
 function cardHTML(ev, accent){
   const locHTML = ev.location ? `<span class="meta-item">${pinIcon} ${escapeHTML(ev.location)}</span>` : "";
   const priceHTML = ev.price ? `<span class="meta-item">${ticketIcon} ${escapeHTML(ev.price)}</span>` : "";
@@ -549,24 +522,7 @@ function escapeHTML(str){
   return div.innerHTML;
 }
 
-function dateISO(d){
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-}
-
-function eventMatches(ev, filters){
-  const dateOK = !filters.date || dateISO(ev.dateObj) === filters.date;
-  const locationOK = !filters.location || normalize(ev.location) === normalize(filters.location);
-  const artistQuery = normalize(filters.artist);
-  const artistOK = !artistQuery || normalize(ev.artists).includes(artistQuery);
-  return dateOK && locationOK && artistOK;
-}
-
-function renderGroups(container, events, accentOffset=0){
-  if(!events.length){
-    container.innerHTML = "";
-    return accentOffset;
-  }
-
+function renderGroups(container, events, accentOffset = 0){
   let html = "";
   let lastKey = null;
   let accentIndex = accentOffset;
@@ -576,6 +532,7 @@ function renderGroups(container, events, accentOffset=0){
 
     if(key !== lastKey){
       if(lastKey !== null) html += "</div>";
+
       const accent = ACCENTS[accentIndex % ACCENTS.length];
       html += `<div class="date-group">
         <div class="date-band" style="background:var(--${accent})">${formatLongDate(ev.dateObj)}</div>`;
@@ -587,9 +544,191 @@ function renderGroups(container, events, accentOffset=0){
     accentIndex++;
   });
 
-  html += "</div>";
+  if(events.length) html += "</div>";
   container.innerHTML = html;
   return accentIndex;
+}
+
+function loadAgenda(){
+  // Metode principal: descarreguem el CSV publicat i el forcem a UTF-8
+  // (Google no sempre indica la codificacio correcta, cosa que feia
+  // que els accents es perdessin).
+  fetch(CSV_URL + (CSV_URL.includes("?") ? "&" : "?") + "cachebust=" + Date.now())
+    .then(res => {
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      return res.arrayBuffer();
+    })
+    .then(buffer => {
+      const text = new TextDecoder("utf-8").decode(buffer);
+      parseCSVText(text);
+    })
+    .catch(() => {
+      loadAgendaGvizFallback();
+    });
+}
+
+// Metode de reserva: API "gviz" de Google Sheets via etiqueta <script>
+// (JSONP). Nomes funciona si el full esta compartit com "Qualsevol amb
+// l'enllac", no nomes "Publicat al web".
+function loadAgendaGvizFallback(){
+  let settled = false;
+
+  window.__festcatGviz = function(response){
+    settled = true;
+    try{
+      if(!response || !response.table) throw new Error("Resposta buida de l'Excel");
+      processGvizTable(response.table);
+    }catch(err){
+      showError("No s'ha pogut carregar l'Excel. Comprova que el full estigui publicat al web com a CSV (Arxiu → Comparteix → Publica al web).");
+    }
+  };
+
+  const script = document.createElement("script");
+  script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&headers=1&tqx=out:json;responseHandler:__festcatGviz`;
+  script.onerror = function(){
+    if(!settled){
+      settled = true;
+      showError("No s'ha pogut connectar amb l'Excel des d'aquesta pàgina. Comprova la connexió o torna-ho a provar més tard.");
+    }
+  };
+  document.head.appendChild(script);
+
+  setTimeout(() => {
+    if(!settled){
+      settled = true;
+      showError("No s'ha pogut connectar amb l'Excel des d'aquesta pàgina. Comprova la connexió o torna-ho a provar més tard.");
+    }
+  }, 6000);
+}
+
+function processGvizTable(table){
+  const labels = table.cols.map(c => c.label || c.id || "");
+  const idxDate = findColumnIndex(labels, COLUMN_CANDIDATES.date);
+  const idxFestival = findColumnIndex(labels, COLUMN_CANDIDATES.festival);
+  const idxArtists = findColumnIndex(labels, COLUMN_CANDIDATES.artists);
+  const idxLocation = findColumnIndex(labels, COLUMN_CANDIDATES.location);
+  const idxPrice = findColumnIndex(labels, COLUMN_CANDIDATES.price);
+
+  if(idxDate === -1){
+    showError(`No he trobat la columna de data. Columnes detectades a l'Excel: ${labels.join(", ")}`);
+    return;
+  }
+
+  const events = (table.rows || [])
+    .map(row => {
+      const cells = row.c || [];
+      const dateObj = gvizCellToDate(cells[idxDate]);
+      if(!dateObj) return null;
+      return {
+        dateObj,
+        festival: gvizCellToText(cells[idxFestival]),
+        artists: gvizCellToText(cells[idxArtists]),
+        location: gvizCellToText(cells[idxLocation]),
+        price: gvizCellToText(cells[idxPrice])
+      };
+    })
+    .filter(Boolean);
+
+  finishLoad(events);
+}
+
+function gvizCellToText(cell){
+  if(!cell) return "";
+  if(cell.f !== undefined && cell.f !== null) return String(cell.f);
+  if(cell.v === undefined || cell.v === null) return "";
+  return String(cell.v);
+}
+
+function gvizCellToDate(cell){
+  if(!cell || cell.v === undefined || cell.v === null) return null;
+  if(cell.v instanceof Date) return cell.v;
+  if(typeof cell.v === "string"){
+    // L'API gviz de Google codifica les dates com "Date(any,mes,dia)"
+    // amb el mes JA en base 0 (gener=0). Per exemple 18/09/2026 arriba
+    // com "Date(2026,8,18)". Sense això, parseDate() no ho entenia
+    // mai i totes les files es descartaven (per això sortien 0 events).
+    const gvizMatch = cell.v.match(/^Date\((\d+),(\d+),(\d+)/);
+    if(gvizMatch){
+      return new Date(+gvizMatch[1], +gvizMatch[2], +gvizMatch[3]);
+    }
+    // Si l'Excel té la data formatada com a text (dd/mm/yyyy), Google
+    // sol posar-la a cell.f amb el format visible del full.
+    if(cell.f){
+      const parsedF = parseDate(cell.f);
+      if(parsedF) return parsedF;
+    }
+    return parseDate(cell.v);
+  }
+  return null;
+}
+
+function findColumnIndex(headers, candidates){
+  const normHeaders = headers.map(normalize);
+  for(const cand of candidates){
+    const idx = normHeaders.findIndex(h => h === cand || h.includes(cand));
+    if(idx !== -1) return idx;
+  }
+  return -1;
+}
+
+function parseCSVText(csvText){
+  Papa.parse(csvText, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results){
+      try{
+        const headers = results.meta.fields || [];
+
+        const colDate = findColumn(headers, COLUMN_CANDIDATES.date);
+        const colFestival = findColumn(headers, COLUMN_CANDIDATES.festival);
+        const colArtists = findColumn(headers, COLUMN_CANDIDATES.artists);
+        const colLocation = findColumn(headers, COLUMN_CANDIDATES.location);
+        const colPrice = findColumn(headers, COLUMN_CANDIDATES.price);
+
+        if(!colDate){
+          showError(`No he trobat la columna de data. Columnes detectades a l'Excel: ${headers.join(", ")}`);
+          return;
+        }
+
+        const events = results.data
+          .map((row) => {
+            const rawDate = row[colDate];
+            const dateObj = parseDate(rawDate);
+            if(!dateObj) return null;
+            return {
+              dateObj,
+              festival: colFestival ? row[colFestival] : "",
+              artists: colArtists ? row[colArtists] : "",
+              location: colLocation ? row[colLocation] : "",
+              price: colPrice ? row[colPrice] : ""
+            };
+          })
+          .filter(Boolean);
+
+        finishLoad(events);
+      }catch(err){
+        showError("Hi ha hagut un problema processant les dades de l'Excel.");
+      }
+    }
+  });
+}
+
+// Logica compartida pels dos metodes: ordena, separa passat/futur i pinta.
+let ALL_EVENTS = [];
+let FILTERS_READY = false;
+
+function dateISO(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function eventMatches(ev, filters){
+  const dateOK = !filters.date || dateISO(ev.dateObj) === filters.date;
+  const locationOK = !filters.location || normalize(ev.location) === normalize(filters.location);
+
+  const artistQuery = normalize(filters.artist);
+  const artistOK = !artistQuery || normalize(ev.artists).includes(artistQuery);
+
+  return dateOK && locationOK && artistOK;
 }
 
 function populateFilters(events){
@@ -597,19 +736,21 @@ function populateFilters(events){
   const locationSelect = document.getElementById("filter-location");
   const artistList = document.getElementById("artist-options");
 
+  // Dates úniques, ordenades cronològicament.
   const dates = [...new Map(
     events.map(e => [dateISO(e.dateObj), e.dateObj])
   ).entries()].sort((a,b) => a[1] - b[1]);
 
+  // Ubicacions úniques, ordenades sense tenir en compte accents/majúscules.
   const locations = [...new Set(
-    events.map(e => (e.location || "").trim()).filter(Boolean)
+    events.map(e => String(e.location || "").trim()).filter(Boolean)
   )].sort((a,b) => normalize(a).localeCompare(normalize(b), "ca"));
 
+  // Artistes separats en noms individuals per fer la cerca més útil.
   const artists = [];
   const seenArtists = new Set();
 
   events.forEach(e => {
-    // Accepta separadors habituals de l'Excel: comes, /, | i salts de línia.
     String(e.artists || "")
       .split(/[,|\/\n;]+/)
       .map(s => s.trim())
@@ -628,7 +769,7 @@ function populateFilters(events){
   dateSelect.innerHTML =
     `<option value="">Totes les dates</option>` +
     dates.map(([value, d]) =>
-      `<option value="${value}">${formatLongDate(d)}</option>`
+      `<option value="${value}">${escapeHTML(formatLongDate(d))}</option>`
     ).join("");
 
   locationSelect.innerHTML =
@@ -652,7 +793,7 @@ function getCurrentFilters(){
   };
 }
 
-function updateFilterResult(count, total){
+function updateFilterResult(count){
   const el = document.getElementById("filter-result");
   const filters = getCurrentFilters();
   const active = filters.date || filters.location || filters.artist;
@@ -668,13 +809,14 @@ function updateFilterResult(count, total){
 }
 
 function renderFilteredAgenda(){
-  if(!ALL_EVENTS.length || !FILTERS_READY) return;
+  if(!FILTERS_READY || !ALL_EVENTS.length) return;
 
   const filters = getCurrentFilters();
   const today = new Date();
   today.setHours(0,0,0,0);
 
   const filtered = ALL_EVENTS.filter(ev => eventMatches(ev, filters));
+
   const upcoming = filtered
     .filter(e => e.dateObj >= today)
     .sort((a,b) => a.dateObj - b.dateObj);
@@ -686,19 +828,22 @@ function renderFilteredAgenda(){
   const upcomingContainer = document.getElementById("upcoming");
   const pastContainer = document.getElementById("past-content");
   const pastToggle = document.getElementById("past-toggle");
+  const pastLabel = document.getElementById("past-toggle-label");
 
   if(upcoming.length){
     renderGroups(upcomingContainer, upcoming, 0);
   }else{
-    upcomingContainer.innerHTML =
-      `<div class="empty">No s'ha trobat cap concert amb aquests filtres.</div>`;
+    upcomingContainer.innerHTML = filtered.length
+      ? `<div class="empty">No hi ha concerts propers amb aquests filtres.</div>`
+      : `<div class="empty">No s'ha trobat cap concert amb aquests filtres.</div>`;
   }
 
   if(past.length){
     renderGroups(pastContainer, past, 0);
     pastToggle.style.display = "flex";
-    document.getElementById("past-toggle-label").textContent =
-      `Veure concerts passats (${past.length})`;
+    pastLabel.textContent = past.length === 1
+      ? "Veure concert passat (1)"
+      : `Veure concerts passats (${past.length})`;
   }else{
     pastContainer.innerHTML = "";
     pastContainer.classList.remove("open");
@@ -706,7 +851,7 @@ function renderFilteredAgenda(){
     pastToggle.style.display = "none";
   }
 
-  updateFilterResult(filtered.length, ALL_EVENTS.length);
+  updateFilterResult(filtered.length);
 
   document.getElementById("hero-stats").innerHTML = `
     <span class="stat-pill"><b>${upcoming.length}</b> concerts a l'agenda</span>
@@ -718,22 +863,12 @@ function setupFilters(){
   const dateSelect = document.getElementById("filter-date");
   const locationSelect = document.getElementById("filter-location");
   const artistInput = document.getElementById("filter-artist");
-  const clearButton = document.getElementById("clear-filters");
   const pastToggle = document.getElementById("past-toggle");
   const pastContainer = document.getElementById("past-content");
 
   dateSelect.addEventListener("change", renderFilteredAgenda);
   locationSelect.addEventListener("change", renderFilteredAgenda);
-
-  // Input instantani: no recarrega l'Excel; només filtra l'array en memòria.
   artistInput.addEventListener("input", renderFilteredAgenda);
-
-  clearButton.addEventListener("click", () => {
-    dateSelect.value = "";
-    locationSelect.value = "";
-    artistInput.value = "";
-    renderFilteredAgenda();
-  });
 
   pastToggle.addEventListener("click", () => {
     const isOpen = pastContainer.classList.toggle("open");
@@ -755,11 +890,13 @@ function finishLoad(events){
   renderFilteredAgenda();
 }
 
+
 function showError(msg){
   document.getElementById("upcoming").innerHTML = `<div class="error">⚠ ${msg}</div>`;
 }
 function showEmpty(){
   document.getElementById("upcoming").innerHTML = `<div class="empty">No s'ha trobat cap concert a l'Excel.</div>`;
+  document.getElementById("hero-stats").innerHTML = "";
 }
 
 setupFilters();
