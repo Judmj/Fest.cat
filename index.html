@@ -289,10 +289,6 @@
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
   </button>
   <div id="past-content"></div>
-
-  <div id="debug-panel" style="margin-top:50px; padding:16px; background:#000; border:2px solid #ff0; border-radius:10px; font-family:monospace; font-size:12px; color:#0f0; white-space:pre-wrap; word-break:break-all;">
-    🔧 PANELL DE DEPURACIÓ (esborrar quan tot funcioni)
-  </div>
 </div>
 
 <footer>
@@ -414,30 +410,20 @@ function renderGroups(container, events, accentOffset){
   return accentIndex;
 }
 
-function debugLog(msg){
-  const el = document.getElementById("debug-panel");
-  if(el) el.textContent += "\n" + msg;
-  console.log("[FESTCAT DEBUG]", msg);
-}
-
 function loadAgenda(){
-  debugLog("1) Comença loadAgenda(). CSV_URL = " + CSV_URL);
   // Metode principal: descarreguem el CSV publicat i el forcem a UTF-8
   // (Google no sempre indica la codificacio correcta, cosa que feia
-  // that els accents es perdessin).
+  // que els accents es perdessin).
   fetch(CSV_URL + (CSV_URL.includes("?") ? "&" : "?") + "cachebust=" + Date.now())
     .then(res => {
-      debugLog("2) Resposta fetch rebuda. status=" + res.status + " ok=" + res.ok);
       if(!res.ok) throw new Error("HTTP " + res.status);
       return res.arrayBuffer();
     })
     .then(buffer => {
       const text = new TextDecoder("utf-8").decode(buffer);
-      debugLog("3) Text CSV descodificat, longitud=" + text.length + ". Primers 300 caràcters:\n" + text.slice(0,300));
       parseCSVText(text);
     })
-    .catch(err => {
-      debugLog("X) CSV ha FALLAT: " + err.message + " (provant gviz...)");
+    .catch(() => {
       loadAgendaGvizFallback();
     });
 }
@@ -446,26 +432,21 @@ function loadAgenda(){
 // (JSONP). Nomes funciona si el full esta compartit com "Qualsevol amb
 // l'enllac", no nomes "Publicat al web".
 function loadAgendaGvizFallback(){
-  debugLog("4) Provant mètode de reserva (gviz)...");
   let settled = false;
 
   window.__festcatGviz = function(response){
     settled = true;
-    debugLog("5) Resposta gviz rebuda: " + JSON.stringify(response).slice(0,300));
     try{
       if(!response || !response.table) throw new Error("Resposta buida de l'Excel");
       processGvizTable(response.table);
     }catch(err){
-      debugLog("X) Error processant gviz: " + err.message);
       showError("No s'ha pogut carregar l'Excel. Comprova que el full estigui publicat al web com a CSV (Arxiu → Comparteix → Publica al web).");
     }
   };
 
   const script = document.createElement("script");
   script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&headers=1&tqx=out:json;responseHandler:__festcatGviz`;
-  debugLog("4b) URL gviz: " + script.src);
   script.onerror = function(){
-    debugLog("X) La càrrega del <script> gviz ha fallat (onerror).");
     if(!settled){
       settled = true;
       showError("No s'ha pogut connectar amb l'Excel des d'aquesta pàgina. Comprova la connexió o torna-ho a provar més tard.");
@@ -475,7 +456,6 @@ function loadAgendaGvizFallback(){
 
   setTimeout(() => {
     if(!settled){
-      debugLog("X) Timeout de 6s esgotat sense resposta de gviz.");
       settled = true;
       showError("No s'ha pogut connectar amb l'Excel des d'aquesta pàgina. Comprova la connexió o torna-ho a provar més tard.");
     }
@@ -553,34 +533,28 @@ function findColumnIndex(headers, candidates){
 }
 
 function parseCSVText(csvText){
-  debugLog("6) Cridant Papa.parse()...");
   Papa.parse(csvText, {
     header: true,
     skipEmptyLines: true,
     complete: function(results){
       try{
         const headers = results.meta.fields || [];
-        debugLog("7) Capçaleres detectades per PapaParse: [" + headers.join(" | ") + "]");
-        debugLog("7b) Nombre de files de dades: " + results.data.length);
 
         const colDate = findColumn(headers, COLUMN_CANDIDATES.date);
         const colFestival = findColumn(headers, COLUMN_CANDIDATES.festival);
         const colArtists = findColumn(headers, COLUMN_CANDIDATES.artists);
         const colLocation = findColumn(headers, COLUMN_CANDIDATES.location);
         const colPrice = findColumn(headers, COLUMN_CANDIDATES.price);
-        debugLog("8) Columnes trobades -> data:" + colDate + " | festival:" + colFestival + " | artistes:" + colArtists + " | ubicacio:" + colLocation + " | preu:" + colPrice);
 
         if(!colDate){
-          debugLog("X) NO S'HA TROBAT columna de data. Aturant aquí.");
           showError(`No he trobat la columna de data. Columnes detectades a l'Excel: ${headers.join(", ")}`);
           return;
         }
 
         const events = results.data
-          .map((row, i) => {
+          .map((row) => {
             const rawDate = row[colDate];
             const dateObj = parseDate(rawDate);
-            if(i < 8) debugLog("9." + i + ") fila data cruda=" + JSON.stringify(rawDate) + " -> parsejada=" + (dateObj ? dateObj.toString() : "NULL (DESCARTADA)"));
             if(!dateObj) return null;
             return {
               dateObj,
@@ -592,10 +566,8 @@ function parseCSVText(csvText){
           })
           .filter(Boolean);
 
-        debugLog("10) Total files amb data vàlida: " + events.length + " de " + results.data.length);
         finishLoad(events);
       }catch(err){
-        debugLog("X) EXCEPCIÓ dins parseCSVText: " + err.message);
         showError("Hi ha hagut un problema processant les dades de l'Excel.");
       }
     }
@@ -604,7 +576,6 @@ function parseCSVText(csvText){
 
 // Logica compartida pels dos metodes: ordena, separa passat/futur i pinta.
 function finishLoad(events){
-  debugLog("11) finishLoad() cridat amb " + events.length + " events.");
   events.sort((a,b) => a.dateObj - b.dateObj);
 
   if(!events.length){
@@ -612,29 +583,24 @@ function finishLoad(events){
     return;
   }
 
-  /* ============================================================
-     FILTRE DE DATES DESACTIVAT TEMPORALMENT (per depurar)
-     Abans això separava els concerts en "upcoming" (avui en
-     endavant) i "past" (anteriors a avui), i només es mostraven
-     els "upcoming" directament. Ara es mostren TOTS els esdeveniments
-     de l'Excel, sense cap filtre, per descartar que el problema
-     vingui d'aquí.
-  ============================================================
+  // Separem concerts futurs (avui inclos) dels passats. Nomes es mostren
+  // directament els futurs; els passats queden amagats sota un desplegable.
   const today = new Date();
   today.setHours(0,0,0,0);
 
   const upcoming = events.filter(e => e.dateObj >= today);
   const past = events.filter(e => e.dateObj < today).sort((a,b) => b.dateObj - a.dateObj);
-  ============================================================ */
 
   const upcomingContainer = document.getElementById("upcoming");
   const pastContainer = document.getElementById("past-content");
   const pastToggle = document.getElementById("past-toggle");
 
-  // Mostrem TOTS els events, sense filtrar per data:
-  renderGroups(upcomingContainer, events, 0);
+  if(upcoming.length){
+    renderGroups(upcomingContainer, upcoming, 0);
+  }else{
+    showEmpty();
+  }
 
-  /* Secció de "concerts passats" desactivada mentre no filtrem:
   if(past.length){
     renderGroups(pastContainer, past, 0);
     pastToggle.style.display = "flex";
@@ -644,10 +610,9 @@ function finishLoad(events){
       pastToggle.classList.toggle("open", isOpen);
     });
   }
-  */
 
   document.getElementById("hero-stats").innerHTML = `
-    <span class="stat-pill"><b>${events.length}</b> concerts a l'agenda</span>
+    <span class="stat-pill"><b>${upcoming.length}</b> concerts a l'agenda</span>
     <span class="stat-pill">Sempre al dia 🎶</span>
   `;
 }
