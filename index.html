@@ -92,7 +92,7 @@ button.stat{cursor:pointer}button.stat:hover b{color:var(--coral)}
 .next-item{display:block;text-decoration:none;padding:12px 14px;border-radius:var(--r-s);margin-top:8px;background:color-mix(in srgb,var(--c) 10%,transparent);border-left:3px solid var(--c)}
 .next-item b{display:block;font-size:.98rem}.next-item span{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
 .next-more{margin:12px 0 0;font-size:.8rem;color:var(--muted)}
-@media(max-width:860px){.hero{grid-template-columns:1fr;gap:0;padding:22px 0 0}.nextbox,.stats,.hero-cta{display:none}.eyebrow{margin-bottom:10px}.hero h1{margin-bottom:10px}}
+@media(max-width:860px){.hero{grid-template-columns:1fr;gap:0;padding:22px 0 0}.nextbox{display:none}.eyebrow{margin-bottom:10px}.hero h1{margin-bottom:10px}.hero-cta{margin-top:14px;gap:8px;flex-wrap:nowrap}.hero-cta .btn{flex:1;padding:11px 10px;font-size:.84rem;white-space:nowrap}.stats{margin-top:16px;padding-top:14px;gap:10px 22px}.stat b{font-size:1.3rem}.stat span{font-size:.58rem;margin-top:4px}.live{font-size:.7rem}}
 
 /* Capçalera d'agenda */
 .block-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:36px 0 14px}
@@ -106,13 +106,13 @@ button.stat{cursor:pointer}button.stat:hover b{color:var(--coral)}
 .ctl:hover{border-color:rgba(247,247,242,.35)}.ctl:focus-within{border-color:#fff}
 .ctl .pre{font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);flex:none}
 .ctl input,.ctl select,.ctl .val{flex:1;min-width:0;height:100%;border:0;background:none;color:var(--text);font:600 .9rem var(--font-body);outline:none;color-scheme:dark;text-align:left;padding:0;cursor:pointer;appearance:none;-webkit-appearance:none}
-.ctl .val{display:flex;align-items:center;justify-content:space-between;gap:6px}.ctl .val span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctl .val{display:flex;align-items:center;justify-content:space-between;gap:6px}.ctl .val{overflow:hidden}.ctl .val span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ctl select{padding-right:18px}
 .ctl>.ico{color:var(--muted);pointer-events:none}
-.ctl.search{flex:1 1 220px;cursor:text}.ctl.search input{cursor:text}.ctl.search input::-webkit-search-cancel-button{display:none}
+.ctl.search{flex:0 1 300px;cursor:text}.ctl.search input{cursor:text}.ctl.search input::-webkit-search-cancel-button{display:none}
 .ctl.search input::placeholder{color:var(--muted);font-weight:500}
-.ctl.sel{flex:0 1 190px}
-.fpanel{display:flex;gap:10px;flex:0 1 auto}
+.ctl.sel{flex:1 1 0}@media(min-width:681px){.ctl.sel:last-child .pop{left:auto;right:0}}
+.fpanel{display:flex;gap:10px;flex:1 1 0;min-width:0}
 .fbtn{display:none;position:relative;height:44px;padding:0 14px;gap:8px;align-items:center;border:1px solid var(--line-2);border-radius:var(--r-s);background:var(--surface);color:var(--text);font:700 .86rem var(--font-body);cursor:pointer}
 .fbtn b{min-width:18px;height:18px;border-radius:9px;background:var(--coral);color:var(--bg);font-size:.7rem;display:grid;place-items:center;padding:0 5px}
 .chips{display:flex;gap:8px;margin:12px 0 0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}
@@ -121,7 +121,7 @@ button.stat{cursor:pointer}button.stat:hover b{color:var(--coral)}
 .chip.active{background:var(--text);color:var(--bg);border-color:var(--text)}
 .chip[data-type]::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
 .chip[data-type].active{background:var(--c);border-color:var(--c);color:var(--bg)}.chip[data-type].active::before{background:var(--bg)}
-.sep{flex:none;width:1px;background:var(--line-2);margin:4px 2px}
+.mob-chips{display:none}.sep{flex:none;width:1px;background:var(--line-2);margin:4px 2px}
 .filter-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
 .filter-bar:has(.filter-result:empty):has([hidden]){display:none}
 .filter-result{color:var(--muted);font-size:.8rem;font-weight:600}
@@ -134,7 +134,7 @@ button.stat{cursor:pointer}button.stat:hover b{color:var(--coral)}
 #scrim{position:fixed;inset:0;z-index:39;background:rgba(0,0,0,.55)}
 @media(max-width:680px){
   .ctl.search{flex:1 1 0}.fbtn{display:inline-flex}
-  .fpanel{display:none;order:3;flex:1 1 100%;flex-direction:row}.fpanel.open{display:flex}.fpanel .ctl{flex:1 1 0}
+  .fpanel{display:none;order:3;flex:1 1 100%;flex-wrap:wrap}.fpanel.open{display:flex}.fpanel .ctl{flex:1 1 100%}.mob-chips{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 100%}.chips .desk{display:none}
   .ctl input,.ctl select,.ctl .val{font-size:16px}
   .pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-height:70vh;border-radius:20px 20px 0 0;padding:10px 10px calc(14px + env(safe-area-inset-bottom))}
   .chips{margin:10px -16px 0;padding:0 16px 2px}
@@ -148,12 +148,12 @@ button.stat{cursor:pointer}button.stat:hover b{color:var(--coral)}
 
 /* Targetes: tot el color ve del tipus */
 .t-festival{--c:var(--coral)}.t-concert{--c:var(--cyan)}.t-festa{--c:var(--lilac)}
-.card{position:relative;display:flex;min-width:0;overflow:hidden;border:1px solid color-mix(in srgb,var(--c) 30%,transparent);border-radius:var(--r-m);background:linear-gradient(110deg,color-mix(in srgb,var(--c) 10%,var(--surface)),var(--surface) 62%);transition:border-color .2s,transform .25s,opacity .5s,box-shadow .25s}
+.card{--bc:color-mix(in srgb,var(--c) 30%,transparent);position:relative;display:flex;min-width:0;overflow:hidden;border:1px solid var(--bc);border-radius:var(--r-m);background:linear-gradient(110deg,color-mix(in srgb,var(--c) 10%,var(--surface)),var(--surface) 62%);transition:border-color .2s,transform .25s,opacity .5s,box-shadow .25s}
 .card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--c) 16%,transparent),transparent 70%)}
-@media(hover:hover){.card:hover{border-color:color-mix(in srgb,var(--c) 70%,transparent);transform:translateY(-2px)}.card:hover::after{opacity:1}}
+@media(hover:hover){.card:hover{--bc:color-mix(in srgb,var(--c) 70%,transparent);transform:translateY(-2px)}.card:hover::after{opacity:1}}
 .reveal{opacity:0;transform:translateY(16px)}.reveal.in{opacity:1;transform:none}
 .stub{position:relative;flex:0 0 78px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:14px 0;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border-right:2px dashed color-mix(in srgb,var(--c) 40%,transparent);line-height:1}
-.stub::before,.stub::after{content:"";position:absolute;right:-8px;width:14px;height:14px;border-radius:50%;background:var(--bg)}
+.stub::before,.stub::after{content:"";position:absolute;right:-8px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:1px solid var(--bc)}
 .stub::before{top:-8px}.stub::after{bottom:-8px}
 .stub .wd,.stub .mon{font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .stub .day{font-family:var(--font-display);font-size:2.1rem;color:var(--text);margin:4px 0 3px}
@@ -165,15 +165,15 @@ button.stat{cursor:pointer}button.stat:hover b{color:var(--coral)}
 .title{font-family:var(--font-display);text-transform:uppercase;font-size:clamp(1.12rem,3.4vw,1.45rem);line-height:1.1;margin:0;overflow-wrap:anywhere}
 .artists{margin:7px 0 0;color:var(--muted);font-size:.92rem;line-height:1.4}
 .side{flex:none;width:250px;display:flex;flex-direction:column;gap:12px}
-.meta{display:flex;flex-direction:column;gap:6px}
+.meta{display:flex;flex-direction:column;gap:6px;min-width:0}.side.row{flex-direction:row;align-items:center;justify-content:space-between;gap:12px}.side.row .meta{flex:1}.side.row .abtn.sq{flex:none}
 .mi{display:flex;align-items:flex-start;gap:8px;font-size:.86rem;font-weight:600;text-decoration:none;color:var(--text);min-width:0}
-.mi svg{color:var(--c);margin-top:2px}.mi span{min-width:0}
+.mi svg{color:var(--c);margin-top:2px}.mi span{min-width:0;overflow-wrap:anywhere}
 a.mi:hover span{text-decoration:underline}
 .acts{display:flex;gap:8px}
 .abtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);color:var(--c);background:none;text-decoration:none;font:800 .8rem var(--font-body);transition:.15s;white-space:nowrap}
 .abtn:hover{background:var(--c);color:var(--bg)}.abtn.sq{width:40px;padding:0}
 @media(max-width:720px){
-  .stub{flex-basis:58px}.stub .day{font-size:1.6rem}.stub::before,.stub::after{width:12px;height:12px;right:-7px}
+  .stub{flex-basis:58px}.stub .day{font-size:1.6rem}.stub::before,.stub::after{width:12px;height:12px;right:-7px}.stub::before{top:-7px}.stub::after{bottom:-7px}
   .content{flex-direction:column;align-items:stretch;gap:12px;padding:14px 14px 14px 16px}
   .side{width:auto;gap:10px}.meta{gap:5px}.acts .abtn:not(.sq){flex:1}
 }
@@ -255,14 +255,19 @@ footer{border-top:1px solid var(--line);margin-top:20px}
       <div class="block-head"><h2>Agenda</h2></div>
       <div id="filters-area" hidden>
         <div class="frow">
-          <label class="ctl search"><i data-ico="search" data-s="18"></i><input id="filter-artist" type="search" list="artist-options" placeholder="Cerca artista o festival" autocomplete="off" spellcheck="false" aria-label="Cerca per artista o festival"></label>
-          <datalist id="artist-options"></datalist>
+          <label class="ctl search"><i data-ico="search" data-s="18"></i><input id="filter-artist" type="search" placeholder="Artista o festival" autocomplete="off" spellcheck="false" aria-label="Cerca per artista o festival"></label>
           <button class="fbtn" id="fbtn" type="button" aria-expanded="false" aria-controls="fpanel"><i data-ico="sliders" data-s="16"></i>Filtres<b id="fbadge" hidden></b></button>
           <div class="fpanel" id="fpanel">
-            <div class="ctl sel"><span class="pre">Mes</span><select id="filter-month" aria-label="Mes"><option value="">Tots</option></select><i data-ico="chev" data-s="16"></i></div>
+            <div class="ctl sel" id="month-ctl"><span class="pre">Mes</span><input type="hidden" id="filter-month" value=""><button class="val" id="month-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Mes"><span id="month-label">Tots</span><i data-ico="chev" data-s="16"></i></button><div class="pop" id="month-pop" role="listbox" hidden></div></div>
             <div class="ctl sel" id="loc-ctl"><span class="pre">Lloc</span>
-              <button class="val" id="loc-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Ubicació"><span id="loc-label">Totes</span><i data-ico="chev" data-s="16"></i></button>
+              <button class="val" id="loc-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Ubicació"><span id="loc-label">Tots</span><i data-ico="chev" data-s="16"></i></button>
               <div class="pop" id="loc-pop" role="listbox" hidden></div>
+            </div>
+            <div class="mob-chips">
+              <button class="chip t-festival" type="button" data-type="festival">Festivals</button>
+              <button class="chip t-concert" type="button" data-type="concert">Concerts</button>
+              <button class="chip t-festa" type="button" data-type="festa">Festes majors</button>
+              <button class="chip" type="button" data-price="free">Gratuïts</button>
             </div>
           </div>
         </div>
@@ -270,12 +275,12 @@ footer{border-top:1px solid var(--line);margin-top:20px}
           <button class="chip" type="button" data-quick="avui">Avui</button>
           <button class="chip" type="button" data-quick="setmana">Aquesta setmana</button>
           <button class="chip" type="button" data-quick="mes">Aquest mes</button>
-          <span class="sep"></span>
-          <button class="chip t-festival" type="button" data-type="festival">Festivals</button>
-          <button class="chip t-concert" type="button" data-type="concert">Concerts</button>
-          <button class="chip t-festa" type="button" data-type="festa">Festes majors</button>
-          <span class="sep"></span>
-          <button class="chip" type="button" data-price="free">Gratuïts</button>
+          <span class="sep desk"></span>
+          <button class="chip desk t-festival" type="button" data-type="festival">Festivals</button>
+          <button class="chip desk t-concert" type="button" data-type="concert">Concerts</button>
+          <button class="chip desk t-festa" type="button" data-type="festa">Festes majors</button>
+          <span class="sep desk"></span>
+          <button class="chip desk" type="button" data-price="free">Gratuïts</button>
         </div>
         <div class="filter-bar"><span class="filter-result" id="filter-result" aria-live="polite"></span><button class="link-btn" id="filter-clear" type="button" hidden>Neteja filtres</button></div>
       </div>
@@ -565,7 +570,7 @@ function cardHTML(ev){
             : `<span class="mi">${placeInner}</span>`)
     : "";
   const priceHTML = ev.price ? `<span class="mi">${ico("ticket", 16)}<span>${escapeHTML(ev.price)}</span></span>` : "";
-  const info = url ? `<a class="abtn" href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">Entrades i info${ico("info", 15)}</a>` : "";
+  const info = url ? `<a class="abtn" href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">${isFree(ev) ? "Més informació" : "Entrades i info"}${ico("info", 15)}</a>` : "";
   const cal = `<a class="abtn sq" href="${escapeHTML(calendarUrl(ev))}" target="_blank" rel="noopener noreferrer" aria-label="Afegir al meu calendari" title="Afegir al meu calendari">${ico("cal", 18)}</a>`;
 
   return `
@@ -577,9 +582,9 @@ function cardHTML(ev){
         <h3 class="title">${escapeHTML(ev.festival || "Concert")}</h3>
         ${ev.artists ? `<p class="artists">${escapeHTML(ev.artists)}</p>` : ""}
       </div>
-      <div class="side">
+      <div class="side${url ? "" : " row"}">
         ${(placeHTML || priceHTML) ? `<div class="meta">${placeHTML}${priceHTML}</div>` : ""}
-        <div class="acts">${info}${cal}</div>
+        ${url ? `<div class="acts">${info}${cal}</div>` : cal}
       </div>
     </div>
   </article>`;
@@ -776,8 +781,8 @@ function populateFilters(events){
   const today = todayStart();
   const monthSet = new Set();
   events.forEach(e => { if(e.dateObj >= today) monthSet.add(`${e.dateObj.getFullYear()}-${pad(e.dateObj.getMonth()+1)}`); });
-  $("filter-month").innerHTML = `<option value="">Tots</option>` +
-    [...monthSet].sort().map(v => { const [y,m] = v.split("-").map(Number); return `<option value="${v}">${escapeHTML(monthLabel(y, m-1))}</option>`; }).join("");
+  $("month-pop").innerHTML = `<button class="opt" type="button" data-v="" data-l="Tots" role="option">Tots els mesos</button>` +
+    [...monthSet].sort().map(v => { const [y,m] = v.split("-").map(Number); const l = monthLabel(y, m-1); return `<button class="opt" type="button" data-v="${v}" data-l="${escapeHTML(l)}" role="option">${escapeHTML(l)}</button>`; }).join("");
 
   /* Ubicació: província (clicable, selecciona tot el que hi ha dins) + municipis */
   const groups = new Map();
@@ -788,7 +793,7 @@ function populateFilters(events){
     groups.get(p).set(loc, (groups.get(p).get(loc) || 0) + 1);
   });
   const provs = [...groups.keys()].sort((a, b) => a === "Altres" ? 1 : b === "Altres" ? -1 : byNorm(a, b));
-  let html = `<button class="opt" type="button" data-v="" role="option">Totes les ubicacions</button>`;
+  let html = `<button class="opt" type="button" data-v="" role="option">Tots</button>`;
   provs.forEach(p => {
     const muns = [...groups.get(p).entries()].sort((a, b) => byNorm(a[0], b[0]));
     const total = muns.reduce((s, m) => s + m[1], 0);
@@ -796,13 +801,12 @@ function populateFilters(events){
     html += muns.map(([m, n]) => `<button class="opt mun" type="button" data-v="m:${escapeHTML(m)}" role="option">${escapeHTML(m)} <em>${n}</em></button>`).join("");
   });
   $("loc-pop").innerHTML = html;
+}
 
-  const artists = [], seen = new Set();
-  events.forEach(e => e.artists.split(/[,|\/\n;]+/).map(s => s.trim()).filter(Boolean).forEach(name => {
-    const k = normalize(name); if(k && !seen.has(k)){ seen.add(k); artists.push(name); }
-  }));
-  artists.sort(byNorm);
-  $("artist-options").innerHTML = artists.map(a => `<option value="${escapeHTML(a)}"></option>`).join("");
+function setMonth(v, l){ $("filter-month").value = v; $("month-label").textContent = v ? l : "Tots"; }
+function setLoc(v){
+  F.loc = v;
+  $("loc-label").textContent = v ? (v[0] === "p" ? v.slice(2) + " (tota)" : v.slice(2)) : "Tots";
 }
 
 function populateFormMunicipis(events){
@@ -818,9 +822,10 @@ function updateFilterUI(count){
   document.querySelectorAll(".chip[data-price]").forEach(c => c.classList.toggle("active", !!f.price));
   $("filter-clear").hidden = !active;
   $("filter-result").textContent = active ? (count === 1 ? "1 esdeveniment" : `${count} esdeveniments`) : "";
-  const panelN = [f.month, f.loc].filter(Boolean).length;
+  const panelN = [f.month, f.loc, f.type, f.price].filter(Boolean).length;
   $("fbadge").hidden = !panelN; $("fbadge").textContent = panelN;
   $("loc-pop").querySelectorAll(".opt").forEach(o => o.classList.toggle("on", o.dataset.v === f.loc));
+  $("month-pop").querySelectorAll(".opt").forEach(o => o.classList.toggle("on", o.dataset.v === f.month));
 }
 
 function renderAgenda(){
@@ -845,25 +850,31 @@ function renderAgenda(){
 }
 
 function setupFilters(){
-  const pop = $("loc-pop"), btn = $("loc-btn"), scrim = $("scrim");
-  const closePop = () => { pop.hidden = true; scrim.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+  const scrim = $("scrim");
+  const combos = ["loc", "month"].map(k => ({ btn: $(k + "-btn"), pop: $(k + "-pop") }));
+  const closeAll = () => { combos.forEach(o => { o.pop.hidden = true; o.btn.setAttribute("aria-expanded", "false"); }); scrim.hidden = true; };
   const mobile = () => matchMedia("(max-width:680px)").matches;
 
-  btn.addEventListener("click", () => {
-    const open = pop.hidden;
-    pop.hidden = !open; scrim.hidden = !(open && mobile());
-    btn.setAttribute("aria-expanded", String(open));
-    if(open){ const on = pop.querySelector(".opt.on"); if(on) on.scrollIntoView({ block:"nearest" }); }
-  });
-  pop.addEventListener("click", e => {
+  combos.forEach(o => o.btn.addEventListener("click", () => {
+    const open = o.pop.hidden;
+    closeAll();
+    if(open){
+      o.pop.hidden = false; o.btn.setAttribute("aria-expanded", "true"); scrim.hidden = !mobile();
+      const on = o.pop.querySelector(".opt.on"); if(on) on.scrollIntoView({ block:"nearest" });
+    }
+  }));
+  $("loc-pop").addEventListener("click", e => {
     const o = e.target.closest(".opt"); if(!o) return;
-    F.loc = o.dataset.v;
-    $("loc-label").textContent = o.dataset.v ? (o.dataset.v[0] === "p" ? o.dataset.v.slice(2) + " (tota)" : o.dataset.v.slice(2)) : "Totes";
-    closePop(); renderAgenda();
+    setLoc(o.dataset.v); closeAll(); renderAgenda();
   });
-  scrim.addEventListener("click", closePop);
-  document.addEventListener("click", e => { if(!pop.hidden && !$("loc-ctl").contains(e.target)) closePop(); });
-  document.addEventListener("keydown", e => { if(e.key === "Escape") closePop(); });
+  $("month-pop").addEventListener("click", e => {
+    const o = e.target.closest(".opt"); if(!o) return;
+    setMonth(o.dataset.v, o.dataset.l); if(o.dataset.v) F.quick = "";
+    closeAll(); renderAgenda();
+  });
+  scrim.addEventListener("click", closeAll);
+  document.addEventListener("click", e => { if(!e.target.closest(".ctl.sel")) closeAll(); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape") closeAll(); });
 
   $("fbtn").addEventListener("click", () => {
     const o = $("fpanel").classList.toggle("open");
@@ -871,17 +882,16 @@ function setupFilters(){
   });
 
   document.querySelectorAll(".chip").forEach(chip => chip.addEventListener("click", () => {
-    if(chip.dataset.quick){ F.quick = F.quick === chip.dataset.quick ? "" : chip.dataset.quick; if(F.quick) $("filter-month").value = ""; }
+    if(chip.dataset.quick){ F.quick = F.quick === chip.dataset.quick ? "" : chip.dataset.quick; if(F.quick) setMonth("", ""); }
     if(chip.dataset.type) F.type = F.type === chip.dataset.type ? "" : chip.dataset.type;
     if(chip.dataset.price) F.price = F.price ? "" : "free";
     renderAgenda();
   }));
-  $("filter-month").addEventListener("change", () => { if($("filter-month").value) F.quick = ""; renderAgenda(); });
   $("filter-artist").addEventListener("input", renderAgenda);
 
   $("filter-clear").addEventListener("click", () => {
-    Object.assign(F, { quick:"", type:"", price:"", loc:"" });
-    $("filter-month").value = ""; $("filter-artist").value = ""; $("loc-label").textContent = "Totes";
+    Object.assign(F, { quick:"", type:"", price:"" });
+    setMonth("", ""); setLoc(""); $("filter-artist").value = "";
     renderAgenda();
   });
 
@@ -894,10 +904,9 @@ function setupFilters(){
   document.addEventListener("click", e => {
     if(e.target.closest("[data-retry]")){ showLoading(); loadAgenda(); }
     const q = e.target.closest(".stat[data-quick]");
-    if(q){ F.quick = q.dataset.quick; $("filter-month").value = ""; renderAgenda(); $("agenda-llista").scrollIntoView({ behavior:"smooth" }); }
+    if(q){ F.quick = q.dataset.quick; setMonth("", ""); renderAgenda(); $("agenda-llista").scrollIntoView({ behavior:"smooth" }); }
   });
 }
-
 /* =========================================================
    FORMULARI
    ========================================================= */
