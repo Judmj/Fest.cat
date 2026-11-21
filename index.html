@@ -148,13 +148,14 @@ button.stat{cursor:pointer}button.stat:hover b{color:var(--coral)}
 
 /* Targetes: tot el color ve del tipus */
 .t-festival{--c:var(--coral)}.t-concert{--c:var(--cyan)}.t-festa{--c:var(--lilac)}
-.card{--bc:color-mix(in srgb,var(--c) 30%,transparent);position:relative;display:flex;min-width:0;overflow:hidden;border:1px solid var(--bc);border-radius:var(--r-m);background:linear-gradient(110deg,color-mix(in srgb,var(--c) 10%,var(--surface)),var(--surface) 62%);transition:border-color .2s,transform .25s,opacity .5s,box-shadow .25s}
-.card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--c) 16%,transparent),transparent 70%)}
+.card{--bc:color-mix(in srgb,var(--c) 30%,transparent);--sw:78px;--nr:7px;position:relative;isolation:isolate;display:flex;min-width:0;border:1px solid transparent;border-radius:var(--r-m);transition:transform .25s,opacity .5s}
+.card::before{content:"";position:absolute;inset:-1px;z-index:-1;border-radius:inherit;border:1px solid var(--bc);background-origin:border-box;transition:border-color .2s;background:repeating-linear-gradient(to bottom,color-mix(in srgb,var(--c) 40%,transparent) 0 5px,transparent 5px 9px) calc(var(--sw) - 1px) 0/2px 100% no-repeat,linear-gradient(color-mix(in srgb,var(--c) 14%,transparent),color-mix(in srgb,var(--c) 14%,transparent)) 0 0/calc(var(--sw) + 1px) 100% no-repeat,linear-gradient(110deg,color-mix(in srgb,var(--c) 10%,var(--surface)),var(--surface) 62%);-webkit-mask:radial-gradient(circle var(--nr) at var(--sw) 0,#0000 98%,#000),radial-gradient(circle var(--nr) at var(--sw) 100%,#0000 98%,#000);-webkit-mask-composite:source-in;mask:radial-gradient(circle var(--nr) at var(--sw) 0,#0000 98%,#000),radial-gradient(circle var(--nr) at var(--sw) 100%,#0000 98%,#000);mask-composite:intersect}
+.card::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--c) 16%,transparent),transparent 70%);-webkit-mask:radial-gradient(circle var(--nr) at var(--sw) 0,#0000 98%,#000),radial-gradient(circle var(--nr) at var(--sw) 100%,#0000 98%,#000);-webkit-mask-composite:source-in;mask:radial-gradient(circle var(--nr) at var(--sw) 0,#0000 98%,#000),radial-gradient(circle var(--nr) at var(--sw) 100%,#0000 98%,#000);mask-composite:intersect}
 @media(hover:hover){.card:hover{--bc:color-mix(in srgb,var(--c) 70%,transparent);transform:translateY(-2px)}.card:hover::after{opacity:1}}
 .reveal{opacity:0;transform:translateY(16px)}.reveal.in{opacity:1;transform:none}
-.stub{position:relative;flex:0 0 78px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:14px 0;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border-right:2px dashed color-mix(in srgb,var(--c) 40%,transparent);line-height:1}
-.stub::before,.stub::after{content:"";position:absolute;right:-8px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:1px solid var(--bc)}
-.stub::before{top:-8px}.stub::after{bottom:-8px}
+.stub{position:relative;z-index:1;flex:0 0 78px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:14px 0;color:var(--c);border-right:2px solid transparent;line-height:1}
+.stub::before,.stub::after{content:"";position:absolute;right:calc(-1px - var(--nr));width:calc(var(--nr)*2);height:calc(var(--nr)*2);border:1px solid var(--bc);border-radius:50%;transition:border-color .2s}
+.stub::before{top:calc(-1px - var(--nr));clip-path:inset(50% 0 0 0)}.stub::after{bottom:calc(-1px - var(--nr));clip-path:inset(0 0 50% 0)}
 .stub .wd,.stub .mon{font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .stub .day{font-family:var(--font-display);font-size:2.1rem;color:var(--text);margin:4px 0 3px}
 .content{flex:1;min-width:0;display:flex;align-items:center;gap:28px;padding:16px 20px}
@@ -173,7 +174,7 @@ a.mi:hover span{text-decoration:underline}
 .abtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);color:var(--c);background:none;text-decoration:none;font:800 .8rem var(--font-body);transition:.15s;white-space:nowrap}
 .abtn:hover{background:var(--c);color:var(--bg)}.abtn.sq{width:40px;padding:0}
 @media(max-width:720px){
-  .stub{flex-basis:58px}.stub .day{font-size:1.6rem}.stub::before,.stub::after{width:12px;height:12px;right:-7px}.stub::before{top:-7px}.stub::after{bottom:-7px}
+  .card{--sw:58px;--nr:6px}.stub{flex-basis:58px}.stub .day{font-size:1.6rem}
   .content{flex-direction:column;align-items:stretch;gap:12px;padding:14px 14px 14px 16px}
   .side{width:auto;gap:10px}.meta{gap:5px}.acts .abtn:not(.sq){flex:1}
 }
